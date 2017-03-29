@@ -5,9 +5,9 @@ import {api} from './src/classes'
 export class Grapheq {
 
   protected api
-  
-  constructor(protected apiKey: string) {
-    this.api = new api(apiKey)
+
+  constructor(protected apiKey: string, protected apiSecret: string) {
+    this.api = new api(apiKey, apiSecret)
   }
 
   public tasks: Tasks

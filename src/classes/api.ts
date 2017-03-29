@@ -2,7 +2,7 @@ import * as request from 'request'
 
 export default class API {
 
-  constructor(private apiKey: string) {}
+  constructor(private apiKey: string, private apiSecret: string) {}
 
   get(path) {
     return this.call('GET', path)
@@ -27,7 +27,8 @@ export default class API {
         method,
         body,
         headers: {
-          Authorization: `Bearer ${this.apiKey}`
+          'X-API-KEY': this.apiKey,
+          'X-API-SECRET': this.apiSecret
         }
       }, (err, response, body) => {
         if (err) {
