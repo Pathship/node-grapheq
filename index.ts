@@ -13,7 +13,3 @@ export class Grapheq {
   public tasks: Tasks
   public billing: Billing
 }
-
-let grapheq = new Grapheq(apiKey)
-
-grapheq.tasks.start()
