@@ -1,9 +1,10 @@
 import api from './api'
+import {TaskInterface} from '../interfaces'
 
 export class Task implements TaskInterface {
 
-  constructor(private task, private apiKey: string) {
-    this.api = new api(apiKey)
+  constructor(private task, apiKey: string, apiSecret: string) {
+    this.api = new api(apiKey, apiSecret)
   }
 
   get _id() {
@@ -55,10 +56,11 @@ export class Task implements TaskInterface {
   }
 
   stop(): Promise<TaskInterface> {
-    return this.api.post(`/tasks/${this._id}/stop`).then((task) => {
-      this.state = task.state
-      return task
-    })
+    return this.api.post(`/tasks/${this._id}/stop`)
+      .then((task) => {
+        this.state = task.state
+        return task
+      })
   }
 
   status(): Promise<string> {
@@ -66,6 +68,6 @@ export class Task implements TaskInterface {
   }
 
   data(): Promise<any> {
-    return this.api.get(`/tasks/${this._id}/data/raw`)
+    return this.api.get(`/tasks/${this._id}/data`)
   }
 }
