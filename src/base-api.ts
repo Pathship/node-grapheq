@@ -1,16 +1,16 @@
 import * as request from 'request-promise'
 import * as moment from 'moment'
+import * as Promise from 'bluebird'
+import * as Config from './config'
 
-export default class API {
-
-  // the temporary api token
+export class BaseAPI {
   private token: string
-  private audience: string = 'https://api.grapheq.com'
+  private audience: string = Config.GRAPHEQ_AUDIENCE
   private tokenExpiresIn: Date
 
-  constructor(private apiKey: string, private apiSecret: string) {}
+  constructor(protected apiKey: string, protected apiSecret: string) {}
 
-  get tokenExpired() {
+  get tokenExpired(): boolean {
     if (!this.token) {
       return true
     }
@@ -18,27 +18,28 @@ export default class API {
     return moment().isAfter(this.tokenExpiresIn)
   }
 
-  get(path) {
+  protected get(path: string) {
     return this.call('GET', path)
   }
 
-  post(path, body) {
+  protected post(path: string, body?: Object) {
     return this.call('POST', path, body)
   }
 
-  put(path, body) {
+  protected put(path: string, body?: Object) {
     return this.call('PUT', path, body)
   }
 
-  delete(path, body) {
+  protected delete(path: string, body?: Object) {
     return this.call('DELETE', path, body)
   }
 
-  call(method, path, body) {
+  call(method: string, path: string, body?: Object): Promise<any> {
+    body = body || {}
     let promise
     // if we don't have a token
     // get a temporary one from a client credentials grant
-    if (!this.tokenExpired) {
+    if (this.tokenExpired) {
       promise = request({
         url: 'https://grapheq.auth0.com/oauth/token',
         method: 'POST',
@@ -51,6 +52,7 @@ export default class API {
         }
       })
       .then((body) => {
+        console.log(body)
         this.tokenExpiresIn = moment().add(body.expires_in, 'seconds').toDate()
         return body.access_token
       })
@@ -58,15 +60,14 @@ export default class API {
       promise = Promise.resolve(this.token)
     }
 
-    promise.then((token) => {
+    return promise.then((token) => {
+      console.log(token)
       return request({
-        url: `${Config.BASE_API_URL}/${this.path}`,
+        url: `${Config.GRAPHEQ_API_URL}${path}`,
         method,
         body,
         json: true,
         headers: {
-          'X-API-KEY': this.apiKey,
-          'X-API-SECRET': this.apiSecret,
           'Authorization': `Bearer ${token}`
         }
       })

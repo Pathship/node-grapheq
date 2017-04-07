@@ -1,0 +1,33 @@
+{
+  "name": "node-grapheq",
+  "version": "1.0.0",
+  "description": "Nodejs SDK for the GraphEQ API",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "testb": "tsc -p . && node test/test.js",
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pathship/node-grapheq.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pathship/node-grapheq/issues"
+  },
+  "homepage": "https://github.com/Pathship/node-grapheq#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "moment": "^2.18.1",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.2",
+    "@types/node": "^7.0.12"
+  }
+}

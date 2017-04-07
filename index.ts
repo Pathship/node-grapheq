@@ -1,15 +1,10 @@
-import * as Billing from './src/billing'
-import * as Tasks from './src/tasks'
-import {api} from './src/classes'
+import {TaskAPI} from './src/task-api'
 
-export class Grapheq {
-
-  protected api
-
-  constructor(protected apiKey: string, protected apiSecret: string) {
-    this.api = new api(apiKey, apiSecret)
+class Grapheq {
+  private tasks
+  constructor(private apiKey: string, private apiSecret: string) {
+    this.tasks = new TaskAPI(apiKey, apiSecret)
   }
-
-  public tasks: Tasks
-  public billing: Billing
 }
+
+export = Grapheq
