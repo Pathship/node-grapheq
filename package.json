@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "description": "Nodejs SDK for the GraphEQ API",
   "main": "index.js",
+  "preferGlobal": true,
   "directories": {
     "test": "test"
   },
+  "bin": {
+    "init": "bin/init.js",
+    "tasks": "bin/tasks"
+  },
   "scripts": {
-    "testb": "tsc -p . && node test/test.js",
     "test": "node test/test.js"
   },
   "repository": {
