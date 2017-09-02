@@ -1,14 +1,19 @@
-import {TaskAPI,AuthAPI} from './src/apis/'
+import {TaskAPI,AuthAPI,UploadsAPI} from './src/apis/'
+import * as browser from 'detect-browser'
 
 class Grapheq {
   constructor(private _apiKey?: string) {}
+
+  set apiKey(apiKey: string) {
+    this._apiKey = apiKey
+  }
 
   get auth() {
     return new AuthAPI()
   }
 
-  set apiKey(apiKey: string) {
-    this._apiKey = apiKey
+  get uploads() {
+    return new UploadsAPI()
   }
 
   get tasks() {

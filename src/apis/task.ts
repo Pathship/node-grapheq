@@ -9,57 +9,46 @@ import * as validUrl from 'valid-url'
 import * as url from 'url'
 import * as mime from 'mime-types'
 import * as request from 'request-promise'
+import * as browser from 'detect-browser'
+import {UploadsAPI} from './uploads'
 
 export class TaskAPI {
 
   private stitch: any
   private db: any
-  private s3: any
+  private uploads: any
 
   constructor(private apiKey: string) {
+    if (browser) {
+      console.warn('We have detected that you are loading the Task API into a browser environment. It is highly recommended that you keep your API key secret and only use the Task API from a server environment!')
+    }
+
     this.stitch = Stitch.client.authenticate('apiKey', apiKey)
     this.db = this.stitch.service('mongodb', 'mongodb-atlas').db('grapheq')
+    this.uploads = new UploadsAPI()
   }
 
-  start(video: Blob): Promise<any> {
-    // start createTask pipeline
-    // if the video is a qualified url, just start the task without uploading
-    // otherwise, generate an S3 policy first
+  /**
+   * Start a new task with the video key
+   * If the video is a blob, upload and start
+   * If the video is a string, validate the url and start the task
+   */
+  start(video: Blob | string): Promise<any> {
+    if (video instanceof Blob) {
+       var promise: Promise<string> = this.uploads.generateUploadPolicy(video.type)
+        .then((signed) => {
+          return this.uploads.uploadVideo(video, signed)
+        })
+        .then((upload) => {
+          return upload.key
+        })
+    } else if (validUrl.isWebUri(video)) {
+      var promise: Promise<string> = Promise.resolve(video)
+    } else {
+      throw new Error('Input is not a file blob or a valid web-based url')
+    }
 
-    // if we have a blob, upload that
-    if (!(video instanceof Blob))
-      throw new Error('You must pass either a video Blob, or a valid web-based URL!')
-
-    let uuidv4: string = uuid.v4()
-    let contentType: string = video.type
-    let key: string = `${uuidv4}${ext}`
-    let ext = mime.extension(contentType)
-
-    let s3 = this.stitch.service('aws/s3', 'uploads')
-
-    return s3.signPolicy({
-      contentType,
-      key,
-      acl: 'private',
-      bucket: `${Config.AWS_BUCKET}`
-    }).then((signed) => {
-      let fd = new FormData()
-
-      fd.append('file', <Blob> video)
-      fd.append('key', key)
-      fd.append('file', video)
-      fd.append('policy', signed.policy)
-      fd.append('x-amz-signature', signed.signature)
-      fd.append('x-amz-algorithm', 'AWS4-HMAC-SHA256')
-      fd.append('x-amz-server-side-encryption', 'AES256')
-      fd.append('x-amz-credential', `${signed.accessKeyId}/${Config.AWS_ACCOUNT_ID}/${Config.AWS_DEFAULT_REGION}/s3/aws4_request`)
-
-      let hostname: string = `${Config.AWS_BUCKET}.s3.amazonaws.com/`
-      let endpoint: string = url.format({ protocol: 'https', hostname })
-
-      return request.post(endpoint, fd)
-    })
-    .then(() => {
+    return promise.then((key: string) => {
       return this.stitch.executeNamedPipeline('start-task', { key })
     })
     .then((task) => {
@@ -77,16 +66,30 @@ export class TaskAPI {
   }
 
   get(taskId: string): Promise<any> {
-    return this.db.collection('tasks').findOne({ _id: taskId })
+    return this.db.collection('tasks').find({ _id: taskId }, { limit: 1 })
+      .then((tasks) => {
+        return tasks[0]
+      })
   }
 
-  getAll(): any {
-    return this.db.collection('tasks').find({})
+  getAll({ state, page }: { state?: string, page?: number }): any {
+    let limit = 100
+    let skip  = limit*(page || 0)
+
+    let query = {}
+    if (state) {
+      query['state'] = state.toUpperCase()
+    }
+
+    return this.db.collection('tasks').find(query, { limit, skip })
   }
 
-  status(taskId: string): Promise<string> {
+  /**
+   * Get state of single task
+   */
+  state(taskId: string): Promise<string> {
     return this.get(taskId).then((task) => {
-      return task && task.status
+      return task && task.state
     })
   }
 
