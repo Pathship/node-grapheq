@@ -1,2 +1,1 @@
-export const GRAPHEQ_API_URL  = 'https://api.grapheq.com'
-export const GRAPHEQ_AUDIENCE = 'https://api.grapheq.com'
+export const MONGO_STITCH_APP_ID = <string> process.env.MONGO_STITCH_APP_ID || '12345'

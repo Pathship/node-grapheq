@@ -4,19 +4,7 @@ import * as Promise from 'bluebird'
 import * as Config from './config'
 
 export class BaseAPI {
-  private token: string
-  private audience: string = Config.GRAPHEQ_AUDIENCE
-  private tokenExpiresIn: Date
-
-  constructor(protected apiKey: string, protected apiSecret: string) {}
-
-  get tokenExpired(): boolean {
-    if (!this.token) {
-      return true
-    }
-
-    return moment().isAfter(this.tokenExpiresIn)
-  }
+  constructor(protected apiKey: string) {}
 
   protected get(path: string) {
     return this.call('GET', path)

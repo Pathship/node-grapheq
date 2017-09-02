@@ -25,13 +25,26 @@
   },
   "homepage": "https://github.com/Pathship/node-grapheq#readme",
   "dependencies": {
+    "aws-sdk": "^2.108.0",
+    "axios": "^0.16.2",
     "bluebird": "^3.5.0",
+    "mime-types": "^2.1.17",
     "moment": "^2.18.1",
+    "mongodb-stitch": "0.0.25",
+    "node-uuid": "^1.4.8",
     "request": "^2.81.0",
-    "request-promise": "^4.2.0"
+    "request-promise": "^4.2.1",
+    "valid-url": "^1.0.9"
   },
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
+    "@types/axios": "^0.14.0",
     "@types/bluebird": "^3.5.2",
-    "@types/node": "^7.0.12"
+    "@types/mime-types": "^2.1.0",
+    "@types/node": "^7.0.12",
+    "@types/node-uuid": "0.0.28",
+    "@types/request": "^2.0.3",
+    "@types/request-promise": "^4.1.37",
+    "@types/valid-url": "^1.0.2"
   }
 }

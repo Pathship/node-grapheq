@@ -1,10 +1,27 @@
-import {TaskAPI} from './src/task-api'
+import {TaskAPI,AuthAPI} from './src/apis/'
 
 class Grapheq {
-  private tasks
-  constructor(private apiKey: string, private apiSecret: string) {
-    this.tasks = new TaskAPI(apiKey, apiSecret)
+  constructor(private _apiKey?: string) {}
+
+  get auth() {
+    return new AuthAPI()
+  }
+
+  set apiKey(apiKey: string) {
+    this._apiKey = apiKey
+  }
+
+  get tasks() {
+    if (!this._apiKey) {
+      throw new Error('Must provide an API Key to use the GraphEQ Tasks API')
+    }
+
+    return new TaskAPI(this._apiKey)
   }
 }
 
+//
+// Grapheq.auth.register(username, password)
+// let grapheq = new Grapheq(apiKey)
+// grapheq.tasks.get()
 export = Grapheq
