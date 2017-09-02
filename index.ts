@@ -1,6 +1,14 @@
 import {TaskAPI,AuthAPI,UploadsAPI} from './src/apis/'
 import * as browser from 'detect-browser'
 
+process.on('unhandledRejection', (err) => {
+  console.warn(err)
+})
+
+process.on('unhandledException', (err) => {
+  console.warn(err)
+})
+
 class Grapheq {
   constructor(private _apiKey?: string) {}
 

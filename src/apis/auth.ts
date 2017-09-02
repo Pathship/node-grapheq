@@ -1,4 +1,3 @@
-import * as Bluebird from 'bluebird'
 import { client } from '../services/stitch'
 
 export class AuthAPI {

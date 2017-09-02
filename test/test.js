@@ -1,16 +1,15 @@
-let crypto = require('crypto')
-let Grapheq = require('../index.js')
+const crypto = require('crypto')
+const fs = require('fs')
+const path = require('path')
+const Grapheq = require('../index.js')
 
-let apiKey = '0aOVjtw6iGgs3g7nI923r9RmpGcH5htf'
-let apiSecret = 'rjFv6rUlDG4h5EYQ6KvhaBHh-uQ938NIdve8uzBzQfKoCuUUm8I3i3HSg9tKVCzq'
-let grapheq = new Grapheq(apiKey, apiSecret)
+const API_KEY = 'cU78k2M1kdAhyHAaMR5Bnml41f4da7UqjGmgWtIZCiske8V5Xs009e4v6OjOjnXC'
 
-let videoPath = 'bill.mp4'
-let videoPathSignature = crypto.createHmac('sha256', 'P6ye3DXM2PHiQ6l8wJ5M2Ge9iTNawKli').update(videoPath).digest('hex')
+let grapheq = new Grapheq(API_KEY)
 
-console.log(videoPathSignature)
+let video = fs.readFileSync(path.join(__dirname, 'videos/demo.m4v'))
 
-grapheq.tasks.start(videoPath, videoPathSignature)
+grapheq.tasks.start(video, 'm4v')
   .then((task) => {
     console.log(task)
   })
