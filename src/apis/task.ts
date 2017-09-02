@@ -32,17 +32,16 @@ export class TaskAPI {
 
     let uuidv4: string = uuid.v4()
     let contentType: string = video.type
+    let key: string = `${uuidv4}${ext}`
     let ext = mime.extension(contentType)
 
-    let s3 = this.stitch.service('aws/s3', 'grapheq-upload-video')
-
-    let key: string = `${uuidv4}${ext}`
+    let s3 = this.stitch.service('aws/s3', 'uploads')
 
     return s3.signPolicy({
       contentType,
-      acl: 'private',
       key,
-      bucket: '%%vars.AWS_BUCKET'
+      acl: 'private',
+      bucket: `${Config.AWS_BUCKET}`
     }).then((signed) => {
       let fd = new FormData()
 
